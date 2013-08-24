@@ -12,6 +12,12 @@ class Node(object):
         self.expanded = expanded
         self._bpointer = None
         self._fpointer = []
+        self.pos_x = None
+        self.pos_y = None
+        self.width = 1  # Max. width (in the plotting sense) of subtree
+        self.height = None  # Number of tree levels below (incl. self)
+        self.depth = None  # Number of tree levels above (excl. self)
+
 
     @classmethod
     def sanitize_id(cls, identifier):

@@ -3,8 +3,8 @@ from node import Node
 
 class MultipleRootError(Exception):
     pass
-    
-    
+
+
 class DuplicatedNodeIdError(Exception):
     pass
 
@@ -13,11 +13,9 @@ class Tree(object):
 
     (ROOT, DEPTH, WIDTH) = range(3)
 
-
     def __init__(self):
         self.nodes = {}
         self.root = None
-
 
     def add_node(self, node, parent=None):
         """
@@ -26,9 +24,10 @@ class Tree(object):
         """
         if not isinstance(node, Node):
             raise OSError("First parameter must be object of Class::Node.")
-            
+
         if node.identifier in self.nodes:
-            raise DuplicatedNodeIdError("Can't create node with ID '%s'" % node.identifier)
+            raise DuplicatedNodeIdError(
+                "Can't create node with ID '%s'" % node.identifier)
 
         if parent is None:
             if self.root is not None:
@@ -38,10 +37,9 @@ class Tree(object):
         else:
             parent = Node.sanitize_id(parent)
 
-        self.nodes.update({node.identifier : node})
+        self.nodes.update({node.identifier: node})
         self.__update_fpointer(parent, node.identifier, Node.ADD)
         node.bpointer = parent
-
 
     def create_node(self, tag, identifier=None, parent=None):
         """
@@ -50,7 +48,6 @@ class Tree(object):
         node = Node(tag, identifier)
         self.add_node(node, parent)
         return node
-
 
     def expand_tree(self, nid=None, mode=DEPTH, filter=None, cmp=None, key=None, reverse=False):
         """
@@ -68,13 +65,13 @@ class Tree(object):
             queue.sort(cmp=cmp, key=key, reverse=reverse)
             while queue:
                 yield queue[0].identifier
-                expansion = [self[i] for i in queue[0].fpointer if filter(self[i])]
+                expansion = [self[i]
+                             for i in queue[0].fpointer if filter(self[i])]
                 expansion.sort(cmp=cmp, key=key, reverse=reverse)
                 if mode is self.DEPTH:
                     queue = expansion + queue[1:]  # depth-first
                 elif mode is self.WIDTH:
                     queue = queue[1:] + expansion  # width-first
-
 
     def get_node(self, nid):
         """
@@ -89,7 +86,6 @@ class Tree(object):
             node = None
         return node
 
-
     def is_branch(self, nid):
         """
         Return the following nodes of nid.
@@ -103,7 +99,6 @@ class Tree(object):
             fpointer = []
         return fpointer
 
-
     def move_node(self, source, destination):
         """
         Move a node indicated by the 'source' parameter to the parent node
@@ -116,7 +111,6 @@ class Tree(object):
         self.__update_fpointer(destination, source, Node.ADD)
         self.__update_bpointer(source, destination)
 
-
     def paste(self, nid, new_tree):
         """
         Paste a new tree to the original one by linking the root
@@ -126,7 +120,7 @@ class Tree(object):
 
         if nid is None:
             raise OSError("First parameter can't be None")
-            
+
         nid = Node.sanitize_id(nid)
 
         set_joint = set(new_tree.nodes) & set(self.nodes)
@@ -136,7 +130,6 @@ class Tree(object):
         new_tree[new_tree.root].bpointer = nid
         self.__update_fpointer(nid, new_tree.root, Node.ADD)
         self.nodes.update(new_tree.nodes)
-
 
     def remove_node(self, identifier):
         """
@@ -160,7 +153,6 @@ class Tree(object):
 
         self.__update_fpointer(parent, identifier, Node.DELETE)
 
-
     def rsearch(self, nid, filter=None):
         """
         Search the tree from nid to the root along links reversedly.
@@ -175,7 +167,6 @@ class Tree(object):
                 yield current
             current = self[current].bpointer
 
-
     def save2file(self, filename, nid=None, level=ROOT, idhidden=True, filter=None, cmp=None, key=None, reverse=False):
         """
         Update 20/05/13: Save tree into file for offline analysis
@@ -183,7 +174,8 @@ class Tree(object):
         leading = ''
         lasting = '|___ '
         nid = self.root if (nid is None) else Node.sanitize_id(nid)
-        label = ("{0}".format(self[nid].tag)) if idhidden else ("{0}[{1}]".format(self[nid].tag, self[nid].identifier))
+        label = ("{0}".format(self[nid].tag)) if idhidden else (
+            "{0}[{1}]".format(self[nid].tag, self[nid].identifier))
         filter = (self._real_true) if (filter is None) else filter
 
         if level == self.ROOT:
@@ -193,7 +185,8 @@ class Tree(object):
                 leading += ('|' + ' ' * 4) * (level - 1)
             else:
                 leading += ('|' + ' ' * 4) + (' ' * 5 * (level - 2))
-            open(filename, 'ab').write("{0}{1}{2}\n".format(leading, lasting, label))
+            open(filename, 'ab').write(
+                "{0}{1}{2}\n".format(leading, lasting, label))
 
         if filter(self[nid]) and self[nid].expanded:
             queue = [self[i] for i in self[nid].fpointer if filter(self[i])]
@@ -201,12 +194,11 @@ class Tree(object):
             queue.sort(cmp=cmp, key=key, reverse=reverse)
             level += 1
             for element in queue:
-                self.save2file(filename, element.identifier, level, idhidden, filter, cmp, key, reverse)
-
+                self.save2file(
+                    filename, element.identifier, level, idhidden, filter, cmp, key, reverse)
 
     def _real_true(self, p):
         return True
-
 
     def show(self, nid=None, level=ROOT, idhidden=True, filter=None, cmp=None, key=None, reverse=False):
         """"
@@ -229,7 +221,8 @@ class Tree(object):
         lasting = '|___ '
 
         nid = self.root if (nid is None) else Node.sanitize_id(nid)
-        label = ("{0}".format(self[nid].tag)) if idhidden else ("{0}[{1}]".format(self[nid].tag, self[nid].identifier))
+        label = ("{0}".format(self[nid].tag)) if idhidden else (
+            "{0}[{1}]".format(self[nid].tag, self[nid].identifier))
         filter = (self._real_true) if (filter is None) else filter
 
         if level == self.ROOT:
@@ -247,8 +240,8 @@ class Tree(object):
             queue.sort(cmp=cmp, key=key, reverse=reverse)
             level += 1
             for element in queue:
-                self.show(element.identifier, level, idhidden, filter, cmp, key, reverse)
-
+                self.show(element.identifier, level,
+                          idhidden, filter, cmp, key, reverse)
 
     def subtree(self, nid):
         """
@@ -260,30 +253,45 @@ class Tree(object):
             return st
         st.root = Node.sanitize_id(nid)
         for node_n in self.expand_tree(nid):
-            st.nodes.update({self[node_n].identifier : self[node_n]})
+            st.nodes.update({self[node_n].identifier: self[node_n]})
         return st
 
+    def update_height(self, nid):
+        if not self[nid].fpointer:
+            self[nid].height = 1
+        else:
+            self[nid].height = 1 + max([self.update_height(i)
+                                        for i in self[nid].fpointer])
+        return self[nid].height
+
+    def update_depth(self, nid, parent_depth=-1):
+        self[nid].depth = parent_depth + 1
+        for i in self[nid].fpointer:
+            self.update_depth(i, self[nid].depth)
+
+    def update_width(self, nid):
+        if not self[nid].fpointer:
+            self[nid].width = 1
+        else:
+            self[nid].width = sum([self.update_width(i)
+                                   for i in self[nid].fpointer])
+        return self[nid].width
 
     def __contains__(self, identifier):
         return [node.identifier for node in self.nodes
                 if node.identifier is identifier]
 
-
     def __getitem__(self, key):
         return self.nodes[key]
-
 
     def __len__(self):
         return len(self.nodes)
 
-
     def __setitem__(self, key, item):
         self.nodes.update({key: item})
 
-
     def __update_bpointer(self, nid, identifier):
         self[nid].bpointer = identifier
-
 
     def __update_fpointer(self, nid, identifier, mode):
         if nid is None:
