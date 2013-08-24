@@ -50,7 +50,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 # Sets the radius and horizontal/vertical node distance for plotting.
 NODE_RADIUS = 20
 NODE_DIST_X = 50
-NODE_DIST_Y = 30
+NODE_DIST_Y = 20
 # Node fill color
 NODE_FILL = "#b0b0b0"
 # Line width for plotting
@@ -84,7 +84,7 @@ class TreePlotter:
 
         self.style_text = StyleBuilder()
         self.style_text.setTextAnchor("middle")
-        self.style_text.setDominantBaseline("central")
+        #self.style_text.setDominantBaseline("central")
 
         self.style_line = StyleBuilder()
         self.style_line.setStroke("black")
@@ -125,8 +125,12 @@ class TreePlotter:
         if node.bpointer:
             father_node = tree[node.bpointer]
             # Can use parent.pos_x/y since we're going depth-first.
-            L = line(father_node.pos_x, father_node.pos_y + NODE_RADIUS,
-                     pos_x, pos_y - NODE_RADIUS)
+            if shape == 'ellipse':
+                L = line(father_node.pos_x, father_node.pos_y + NODE_RADIUS * 0.4,
+                         pos_x, pos_y - NODE_RADIUS * 0.4)
+            else:
+                L = line(father_node.pos_x, father_node.pos_y + NODE_RADIUS,
+                        pos_x, pos_y - NODE_RADIUS)
             L.set_style(self.style_line.getStyle())
             self.plot.addElement(L)
 
