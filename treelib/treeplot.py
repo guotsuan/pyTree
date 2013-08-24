@@ -50,7 +50,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 # Sets the radius and horizontal/vertical node distance for plotting.
 NODE_RADIUS = 20
 NODE_DIST_X = 50
-NODE_DIST_Y = 60
+NODE_DIST_Y = 30
 # Node fill color
 NODE_FILL = "#b0b0b0"
 # Line width for plotting
@@ -90,7 +90,7 @@ class TreePlotter:
         self.style_line.setStroke("black")
         self.style_line.setStrokeWidth(LINE_WIDTH)
 
-    def plotNode(self, tree, nid):
+    def plotNode(self, tree, nid, shape=None):
         """Adds a single node to the plot, incl. connection to parent."""
         # Compute node position
 
@@ -103,7 +103,12 @@ class TreePlotter:
         node.pos_y = pos_y
 
         # Actual node (circle)
-        circle = self.builder.createCircle(pos_x, pos_y, NODE_RADIUS)
+        #circle = self.builder.createCircle(pos_x, pos_y, NODE_RADIUS)
+        if shape is None:
+            circle = self.builder.createCircle(pos_x, pos_y, NODE_RADIUS)
+        else:
+            circle = shape
+
         circle.set_style(self.style_node.getStyle())
         self.plot.addElement(circle)
 
