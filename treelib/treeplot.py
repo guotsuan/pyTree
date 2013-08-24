@@ -108,7 +108,10 @@ class TreePlotter:
             circle = self.builder.createCircle(pos_x, pos_y, NODE_RADIUS)
         elif shape == 'rect':
             circle = self.builder.createRect(pos_x, pos_y, NODE_RADIUS,
-                                             NODE_RADIUS*0.4)
+                                             NODE_RADIUS * 0.5)
+        elif shape == 'ellipse':
+            circle = self.builder.createEllipse(pos_x, pos_y, NODE_RADIUS * 0.8,
+                                                NODE_RADIUS * 0.4)
 
         circle.set_style(self.style_node.getStyle())
         self.plot.addElement(circle)
