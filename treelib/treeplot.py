@@ -126,14 +126,14 @@ class TreePlotter:
             L.set_style(self.style_line.getStyle())
             self.plot.addElement(L)
 
-    def plotTree(self, tree):
+    def plotTree(self, tree, shape=None):
         """Go over nodes depth-first and add them to plot."""
 
         tree.update_depth(tree.root)
         tree.update_height(tree.root)
         tree.update_width(tree.root)
         for i in tree.expand_tree():
-            self.plotNode(tree, i)
+            self.plotNode(tree, i, shape)
             node = tree[i]
             if not node.fpointer:
                 self.indent += 1
